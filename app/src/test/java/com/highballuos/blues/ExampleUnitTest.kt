@@ -1,4 +1,4 @@
-package com.dscuos.blues
+package com.highballuos.blues
 
 import org.junit.Test
 

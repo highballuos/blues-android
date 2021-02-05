@@ -10,7 +10,7 @@ android {
     buildToolsVersion "30.0.2"
 
     defaultConfig {
-        applicationId "com.dscuos.blues"
+        applicationId "com.highballuos.blues"
         minSdkVersion 19
         targetSdkVersion 30
         versionCode 1

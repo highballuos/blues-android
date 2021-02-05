@@ -1,21 +1,43 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.dscuos.blues">
+    xmlns:tools="http://schemas.android.com/tools"
+    package="com.highballuos.blues">
 
+    <uses-permission android:name="android.permission.PACKAGE_USAGE_STATS" tools:ignore="ProtectedPermissions" />
     <application
+        android:name=".App"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:label="Blues"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.Blues">
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme">
+
+        <service
+            android:name="com.highballuos.blues.service.SoftKeyboard"
+            android:enabled="true"
+            android:exported="true"
+            android:label="Blues"
+            android:permission="android.permission.BIND_INPUT_METHOD">
+            <meta-data
+                android:name="android.view.im"
+                android:resource="@xml/xml"/>
+            <intent-filter>
+                <action android:name="android.view.InputMethod"/>
+            </intent-filter>
+        </service>
+
+        <activity
+            android:name=".ui.splash.SplashActivity"
+            android:theme="@style/SplashTheme"
+            android:label="SoftKeyboard">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".ui.check_setting.CheckSettingActivity" />
+        <activity android:name=".ui.main.MainActivity" />
     </application>
 
 </manifest>
