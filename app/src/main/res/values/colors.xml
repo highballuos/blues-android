@@ -7,4 +7,5 @@
     <color name="keyboard_background">#DDDDDD</color>
     <color name="white">#FFFFFF</color>
     <color name="keyboard_key_color">#555659</color>
+    <color name="splash_background">#78B3C2</color>
 </resources>

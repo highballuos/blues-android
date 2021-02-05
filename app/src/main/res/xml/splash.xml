@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
-    <item android:drawable="@color/white" />
+    <item android:drawable="@color/splash_background" />
     <item>
         <bitmap
-            android:src="@drawable/keyboard_icon_splash"
+            android:src="@drawable/ic_launcher"
             android:gravity="center"/>
     </item>
 </layer-list>
