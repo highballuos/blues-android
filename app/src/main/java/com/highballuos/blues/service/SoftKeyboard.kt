@@ -186,6 +186,7 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         Log.v(logTAG, "onCreateInputView() 함수 시작")
         mInputView = layoutInflater.inflate(R.layout.input, null) as QwertyKeyboardView
         mInputView?.setOnKeyboardActionListener(this)
+        mInputView?.isPreviewEnabled = false    // Preview 기본값 false 로 설정.
         setKeyboardToInputView(mEnglishKeyboard)
         return mInputView!!
     }
@@ -843,8 +844,6 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
      */
     override fun onKey(primaryCode: Int, keyCodes: IntArray?) {
         Log.v(logTAG, "onKey() 함수 시작")
-        // Character 빼고는 다 Preview Enable False
-        mInputView?.isPreviewEnabled = false
         when (primaryCode) {
             Keyboard.KEYCODE_DELETE -> handleBackspace()
             Keyboard.KEYCODE_SHIFT -> handleShift()
@@ -853,11 +852,7 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             QwertyKeyboardView.KEYCODE_LANGUAGE_SWITCH -> handleLanguageSwitch()
             QwertyKeyboardView.KEYCODE_OPTIONS -> return
             Keyboard.KEYCODE_MODE_CHANGE -> mInputView?.let { handleModeChange() }
-            32 -> handleCharacter(primaryCode, keyCodes)    // Space 는 문자열처럼 처리해주어야 하되, Preview 꺼야함.
-            else -> {
-                mInputView?.isPreviewEnabled = true
-                handleCharacter(primaryCode, keyCodes)
-            }
+            else -> handleCharacter(primaryCode, keyCodes)
         }
     }
 
@@ -1362,12 +1357,25 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
      * Implementation of [KeyboardView.OnKeyboardActionListener]
      * 소프트 키보드의 키가 눌린 순간 호출되는 메소드
      */
-    override fun onPress(primaryCode: Int) {}
+    override fun onPress(primaryCode: Int) {
+        // Space, BackSpace 키의 Repeatable 속성 때문에 기본값이 true 일 경우 Preview 가 사라지지 않음
+        // 따라서 기본값을 false 로 두고 Character 일 때만 켜주는 형식으로...
+        when (primaryCode) {
+            Keyboard.KEYCODE_DELETE, Keyboard.KEYCODE_SHIFT, Keyboard.KEYCODE_CANCEL,
+            Keyboard.KEYCODE_DONE, QwertyKeyboardView.KEYCODE_LANGUAGE_SWITCH,
+            QwertyKeyboardView.KEYCODE_OPTIONS, Keyboard.KEYCODE_MODE_CHANGE,
+            10, 32 -> mInputView?.isPreviewEnabled = false
+            else -> mInputView?.isPreviewEnabled = true
+        }
+    }
 
     /**
      * [onRelease]
      * Implementation of [KeyboardView.OnKeyboardActionListener]
      * 소프트 키보드의 키가 눌린 상태에서 떼어지는 순간 호출되는 메소드
      */
-    override fun onRelease(primaryCode: Int) {}
+    override fun onRelease(primaryCode: Int) {
+        // 키에서 떨어졌을 때 다시 기본값으로
+        mInputView?.isPreviewEnabled = false
+    }
 }
