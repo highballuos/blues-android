@@ -761,23 +761,22 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
 
     /**
      * [updateShiftKeyState]
-     * 키보드를 쉬프트 눌린 상태로 만들어주는 메소드
-     * 영어 키보드 첫 글자 입력 시 대문자 상태를 만들어 주기 위함
+     * 키보드의 Shift 상태를 Editor State 등의 상황에 따라 update 해주기 위한 메소드
      * Helper to update the shift state of our keyboard based on the initial
      * editor state.
      */
     private fun updateShiftKeyState(attr: EditorInfo?) {
         Log.v(logTAG, "updateShiftKeyState() 함수 시작")
         if (attr != null && mInputView != null) {
-            if (CAPITALIZATION) {   // 영어 첫 글자 대문자화 설정 활성화 되어있을 경우
-                if (mEnglishKeyboard === mInputView?.keyboard) {
-                    var caps = 0
-                    val ei = currentInputEditorInfo
-                    if (ei != null && ei.inputType != InputType.TYPE_NULL) {
-                        caps = currentInputConnection.getCursorCapsMode(attr.inputType)
-                    }
-                    mInputView?.isShifted = mCapsLock || caps != 0
+            if (mEnglishKeyboard === mInputView?.keyboard) {
+                var caps = 0
+                val ei = currentInputEditorInfo
+                if (ei != null && ei.inputType != InputType.TYPE_NULL) {
+                    caps = currentInputConnection.getCursorCapsMode(attr.inputType)
                 }
+                // Editor State 이외에도 CAPITALIZATION 설정 값을 확인하도록.
+                // CAPITALIZATION 꺼져있으면 오른쪽은 무조건 false.
+                mInputView?.isShifted = mCapsLock || (caps != 0 && CAPITALIZATION)
             }
 
             // 한국어는 설정에 영향을 받지 않음
