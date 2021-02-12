@@ -25,5 +25,7 @@
     android:background="@color/keyboard_background"
     android:keyBackground="@drawable/key_background"
     android:keyPreviewLayout="@layout/key_preview"
+    android:keyPreviewHeight="50dp"
+    android:keyPreviewOffset="-2dp"
     android:keyTextColor="@color/keyboard_key_color"
     android:shadowRadius="0.0" />
