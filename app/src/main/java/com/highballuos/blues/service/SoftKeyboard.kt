@@ -62,7 +62,7 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
     private var mSymbolsShiftedKeyboard: QwertyKeyboard? = null  // 특수문자 2 키보드
     private var mEnglishKeyboard: QwertyKeyboard? = null  // 영문 쿼티 키보드
     private var mKoreanKeyboard: QwertyKeyboard? = null // 한글 쿼티 키보드
-    private var mKoreanKeyboardShifted: QwertyKeyboard? = null    // 한글 쿼티 키보드 Shifted
+    private var mKoreanShiftedKeyboard: QwertyKeyboard? = null    // 한글 쿼티 키보드 Shifted
     private var mCurrentKeyboard: QwertyKeyboard? = null     // 현재 나타낼 키보드. 위 세 개 중 하나가 경우에 따라 할당됨
     private var mLastLetterKeyboard: QwertyKeyboard? = null // 가장 마지막으로 사용했던 문자 키보드 저장
 
@@ -169,7 +169,7 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         mSymbolsKeyboard = QwertyKeyboard(displayContext, R.xml.qwerty_symbols)
         mSymbolsShiftedKeyboard = QwertyKeyboard(displayContext, R.xml.qwerty_symbols_shift)
         mKoreanKeyboard = QwertyKeyboard(displayContext, R.xml.qwerty_kor)
-        mKoreanKeyboardShifted = QwertyKeyboard(displayContext, R.xml.qwerty_kor_shift)
+        mKoreanShiftedKeyboard = QwertyKeyboard(displayContext, R.xml.qwerty_kor_shift)
     }
 
     /**
@@ -405,7 +405,7 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         attribute?.imeOptions?.let {
             mEnglishKeyboard?.setImeOptions(resources, it)
             mKoreanKeyboard?.setImeOptions(resources, it)
-            mKoreanKeyboardShifted?.setImeOptions(resources, it)
+            mKoreanShiftedKeyboard?.setImeOptions(resources, it)
             mSymbolsKeyboard?.setImeOptions(resources, it)
             mSymbolsShiftedKeyboard?.setImeOptions(resources, it)
         }
@@ -778,9 +778,9 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             }
 
             // 한국어는 설정에 영향을 받지 않음
-            if (mKoreanKeyboardShifted === mInputView?.keyboard) {
+            if (mKoreanShiftedKeyboard === mInputView?.keyboard) {
                 // 한국어 키보드는 필요 없음. 쉬프트 강제 해제
-                mKoreanKeyboardShifted?.isShifted = false
+                mKoreanShiftedKeyboard?.isShifted = false
                 mInputView?.keyboard = mKoreanKeyboard
                 mKoreanKeyboard?.isShifted = false
             }
@@ -1027,11 +1027,11 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
             changeShiftKeyIcon()
         } else if (currentKeyboard === mKoreanKeyboard) {
             mKoreanKeyboard?.isShifted = true
-            setKeyboardToInputView(mKoreanKeyboardShifted)
-            mKoreanKeyboardShifted?.isShifted = true
+            setKeyboardToInputView(mKoreanShiftedKeyboard)
+            mKoreanShiftedKeyboard?.isShifted = true
             changeShiftKeyIcon()
-        } else if (currentKeyboard === mKoreanKeyboardShifted) {
-            mKoreanKeyboardShifted?.isShifted = false
+        } else if (currentKeyboard === mKoreanShiftedKeyboard) {
+            mKoreanShiftedKeyboard?.isShifted = false
             setKeyboardToInputView(mKoreanKeyboard)
             mKoreanKeyboard?.isShifted = false
             changeShiftKeyIcon()
