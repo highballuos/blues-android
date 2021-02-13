@@ -138,10 +138,6 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
      */
     private fun getDisplayContext(): Context {
         Log.v(logTAG, "getDisplayContext() 함수 시작")
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.KITKAT) {
-            // createDisplayContext is not available.
-            return this
-        }
         // TODO (b/133825283): Non-activity components Resources / DisplayMetrics update when
         //  moving to external display.
         // An issue in Q that non-activity components Resources / DisplayMetrics in
