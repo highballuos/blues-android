@@ -17,8 +17,14 @@ package com.highballuos.blues.service
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.graphics.BlendMode
+import android.graphics.BlendModeColorFilter
+import android.graphics.Color
+import android.graphics.PorterDuff
+import android.os.Build
 import android.view.View
 import android.widget.LinearLayout
+import androidx.annotation.RequiresApi
 import com.highballuos.blues.App.Companion.CURRENT_PACKAGE_NAME
 import com.highballuos.blues.App.Companion.PREDICTION
 import com.highballuos.blues.App.Companion.PREFS
@@ -75,14 +81,26 @@ class CandidateView(context: Context) : LinearLayout(context) {
     fun updateView(isPredictionOn: Boolean) {
         if (isPredictionOn) {
             setSuggestions(emptyList(), completions = false, typedWordValid = false)
+            ripple_pulse_layout.startRippleAnimation()
+            if (Build.VERSION.SDK_INT >= 29) {
+                btn_toggle_prediction.background.colorFilter = BlendModeColorFilter(Color.GREEN, BlendMode.MULTIPLY)
+            } else {
+                btn_toggle_prediction.background.setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY)
+            }
+
         } else {
             setSuggestions(
                 listOf("추론 기능이 꺼져있습니다."),
                 completions = false,
                 typedWordValid = false
             )
+            ripple_pulse_layout.stopRippleAnimation()
+            if (Build.VERSION.SDK_INT >= 29) {
+                btn_toggle_prediction.background.colorFilter = BlendModeColorFilter(Color.RED, BlendMode.MULTIPLY)
+            } else {
+                btn_toggle_prediction.background.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY)
+            }
         }
-        btn_toggle_prediction.isChecked = !isPredictionOn
     }
 
     fun setSuggestions(
