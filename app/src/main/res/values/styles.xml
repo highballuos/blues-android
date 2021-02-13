@@ -2,7 +2,7 @@
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
     <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@xml/splash</item>
+        <item name="android:windowBackground">@drawable/splash</item>
     </style>
     <style name="Candidate" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/candidate_font_height</item>
