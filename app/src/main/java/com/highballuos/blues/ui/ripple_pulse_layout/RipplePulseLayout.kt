@@ -1,4 +1,4 @@
-package com.highballuos.blues.ui
+package com.highballuos.blues.ui.ripple_pulse_layout
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
@@ -18,7 +18,7 @@ import androidx.annotation.RequiresApi
 import com.highballuos.blues.R
 
 
-class RipplePulseButton : RelativeLayout {
+class RipplePulseLayout : RelativeLayout {
     private var mPaint: Paint? = null
     private var mAnimatorSet: AnimatorSet? = null
     private var mIsAnimating = false
@@ -51,31 +51,31 @@ class RipplePulseButton : RelativeLayout {
      * @param context
      * @param attrs
      */
-    @SuppressLint("Recycle")
+    @SuppressLint("Recycle", "CustomViewStyleable")
     private fun init(context: Context, attrs: AttributeSet) {
         if (isInEditMode) {
             return
         }
         //reading the attributes
         val attrValues: TypedArray =
-            context.obtainStyledAttributes(attrs, R.styleable.RipplePulseButton)
+            context.obtainStyledAttributes(attrs, R.styleable.RipplePulseLayout)
         val color = attrValues.getColor(
-            R.styleable.RipplePulseButton_rippleColor, resources.getColor(
+            R.styleable.RipplePulseLayout_rippleColor, resources.getColor(
                 R.color.candidate_normal
             )
         )
         val startRadius = attrValues.getDimension(
-            R.styleable.RipplePulseButton_startRadius,
+            R.styleable.RipplePulseLayout_startRadius,
             measuredWidth.toFloat()
         )
         val endRadius = attrValues.getDimension(
-            R.styleable.RipplePulseButton_endRadius,
+            R.styleable.RipplePulseLayout_endRadius,
             (measuredWidth * 2).toFloat()
         )
-        val strokeWidth = attrValues.getDimension(R.styleable.RipplePulseButton_strokeWidth, 4f)
+        val strokeWidth = attrValues.getDimension(R.styleable.RipplePulseLayout_strokeWidth, 4f)
         val duration =
-            attrValues.getInteger(R.styleable.RipplePulseButton_duration, DEFAULT_DURATION)
-        var rippleType = attrValues.getString(R.styleable.RipplePulseButton_rippleType)
+            attrValues.getInteger(R.styleable.RipplePulseLayout_duration, DEFAULT_DURATION)
+        var rippleType = attrValues.getString(R.styleable.RipplePulseLayout_rippleType)
         if (TextUtils.isEmpty(rippleType)) {
             rippleType = RIPPLE_TYPE_FILL
         }

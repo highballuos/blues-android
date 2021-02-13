@@ -24,7 +24,6 @@ import android.graphics.PorterDuff
 import android.os.Build
 import android.view.View
 import android.widget.LinearLayout
-import androidx.annotation.RequiresApi
 import com.highballuos.blues.App.Companion.CURRENT_PACKAGE_NAME
 import com.highballuos.blues.App.Companion.PREDICTION
 import com.highballuos.blues.App.Companion.PREFS
@@ -83,9 +82,13 @@ class CandidateView(context: Context) : LinearLayout(context) {
             setSuggestions(emptyList(), completions = false, typedWordValid = false)
             ripple_pulse_layout.startRippleAnimation()
             if (Build.VERSION.SDK_INT >= 29) {
-                btn_toggle_prediction.background.colorFilter = BlendModeColorFilter(Color.GREEN, BlendMode.MULTIPLY)
+                btn_toggle_prediction.background.colorFilter =
+                    BlendModeColorFilter(Color.GREEN, BlendMode.MULTIPLY)
             } else {
-                btn_toggle_prediction.background.setColorFilter(Color.GREEN, PorterDuff.Mode.MULTIPLY)
+                btn_toggle_prediction.background.setColorFilter(
+                    Color.GREEN,
+                    PorterDuff.Mode.MULTIPLY
+                )
             }
 
         } else {
@@ -96,7 +99,8 @@ class CandidateView(context: Context) : LinearLayout(context) {
             )
             ripple_pulse_layout.stopRippleAnimation()
             if (Build.VERSION.SDK_INT >= 29) {
-                btn_toggle_prediction.background.colorFilter = BlendModeColorFilter(Color.RED, BlendMode.MULTIPLY)
+                btn_toggle_prediction.background.colorFilter =
+                    BlendModeColorFilter(Color.RED, BlendMode.MULTIPLY)
             } else {
                 btn_toggle_prediction.background.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY)
             }

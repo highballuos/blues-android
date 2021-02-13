@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <declare-styleable name="RipplePulseButton">
+    <declare-styleable name="RipplePulseLayout">
         <attr name="rippleColor" format="color"></attr>
         <attr name="rippleType" format="enum">
             <enum name="fill" value="0"></enum>
