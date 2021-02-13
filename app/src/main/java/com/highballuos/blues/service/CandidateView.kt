@@ -35,9 +35,17 @@ class CandidateView(context: Context) : LinearLayout(context) {
      */
     init {
         View.inflate(context, R.layout.layout_candidate, this)
+
+        updateView(
+            !PREFS.getBoolean(
+                CURRENT_PACKAGE_NAME,
+                false   // default false : 기본 상태는 블랙리스트에 올라가있지 않은 상태
+            )
+        )
+
         // 일단은 prediction 하나 고정이므로 index 0으로 고정
         // first_prediction.setOnClickListener { v -> service?.pickSuggestion((v as TextView).text.toString()) }
-        first_prediction.setOnClickListener { mService?.pickSuggestionManually(0) }
+        tv_prediction.setOnClickListener { mService?.pickSuggestionManually(0) }
 
         btn_toggle_prediction.setOnClickListener {
             // 현재 앱이 추론 제외 대상으로 지정되어 있다면 해제, 지정되어 있지 않다면 추가
@@ -48,16 +56,11 @@ class CandidateView(context: Context) : LinearLayout(context) {
             ) {     // true, 즉 블랙리스트에 올라가있을 때
                 PREFS.removeValue(CURRENT_PACKAGE_NAME)     // 블랙리스트에서 삭제
                 PREDICTION = true  // 추론 기능 활성화
-                setSuggestions(emptyList(), completions = false, typedWordValid = false)
             } else {    // false, 즉 블랙리스트에 올라가있지 않을 때
                 PREFS.setBoolean(CURRENT_PACKAGE_NAME, true)    // 항목 추가
                 PREDICTION = false  // 추론 기능 비활성화
-                setSuggestions(
-                    listOf("추론 기능이 꺼져있습니다."),
-                    completions = false,
-                    typedWordValid = false
-                )
             }
+            updateView(PREDICTION)
         }
     }
 
@@ -67,6 +70,19 @@ class CandidateView(context: Context) : LinearLayout(context) {
      */
     fun setService(listener: SoftKeyboard?) {
         mService = listener
+    }
+
+    fun updateView(isPredictionOn: Boolean) {
+        if (isPredictionOn) {
+            setSuggestions(emptyList(), completions = false, typedWordValid = false)
+        } else {
+            setSuggestions(
+                listOf("추론 기능이 꺼져있습니다."),
+                completions = false,
+                typedWordValid = false
+            )
+        }
+        btn_toggle_prediction.isChecked = !isPredictionOn
     }
 
     fun setSuggestions(
@@ -81,8 +97,8 @@ class CandidateView(context: Context) : LinearLayout(context) {
     }
 
     private fun updatePredictions(prediction: List<String>) {
-        first_prediction.text = ""
-        first_prediction.text = if (prediction.isNotEmpty()) prediction[0] else ""
+        tv_prediction.text = ""
+        tv_prediction.text = if (prediction.isNotEmpty()) prediction[0] else ""
     }
 
     fun clear() {

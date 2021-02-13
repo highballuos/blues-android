@@ -395,10 +395,11 @@ class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener
         // 현재 Foreground 에서 실행중인 앱이 추론 기능 Off 로 설정되어있는지 확인
         CURRENT_PACKAGE_NAME = getCurrentForegroundAppPackageName()
         PREDICTION = !PREFS.getBoolean(CURRENT_PACKAGE_NAME, false)
+        // CandidateView 버튼, 텍스트 뷰 업데이트
+        mCandidateView?.updateView(PREDICTION)
 
         // 엔터키 역할을 그때 그때 상황에 따라 다르게 설정하는 코드
         // ex) 검색창에서는 엔터 치면 검색, 카카오톡에서는 엔터 치면 줄바꿈
-        // TODO 키보드마다 다 바꿔줘야되긴 하는데 더 효율적인 방법 없을까?
         // Update the label on the enter key, depending on what the application
         // says it will do.
         attribute?.imeOptions?.let {
