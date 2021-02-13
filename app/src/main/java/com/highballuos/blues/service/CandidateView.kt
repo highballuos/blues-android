@@ -90,7 +90,6 @@ class CandidateView(context: Context) : LinearLayout(context) {
                     PorterDuff.Mode.MULTIPLY
                 )
             }
-
         } else {
             setSuggestions(
                 listOf("추론 기능이 꺼져있습니다."),
@@ -120,7 +119,13 @@ class CandidateView(context: Context) : LinearLayout(context) {
 
     private fun updatePredictions(prediction: List<String>) {
         tv_prediction.text = ""
-        tv_prediction.text = if (prediction.isNotEmpty()) prediction[0] else ""
+        if (prediction.isNotEmpty()) {
+            tv_prediction.text = prediction[0]
+            tv_prediction.setBackgroundResource(R.drawable.bordered)
+        } else {
+            tv_prediction.text = ""
+            tv_prediction.setBackgroundResource(0)
+        }
     }
 
     fun clear() {
