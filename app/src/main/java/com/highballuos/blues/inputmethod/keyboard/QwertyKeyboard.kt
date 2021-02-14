@@ -1,4 +1,4 @@
-package com.highballuos.blues.service
+package com.highballuos.blues.inputmethod.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context

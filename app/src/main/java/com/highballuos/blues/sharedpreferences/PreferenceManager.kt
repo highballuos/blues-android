@@ -1,11 +1,11 @@
-package com.highballuos.blues.setting
+package com.highballuos.blues.sharedpreferences
 
 import android.content.Context
 import android.content.SharedPreferences
 
-class GlobalSharedPreferences(context: Context) {
+class PreferenceManager(context: Context) {
     companion object {
-        const val PREFS_FILENAME = "prefs"
+        const val PREFS_FILENAME = "blues_preference"
         const val CAPITALIZATION_KEY = "CAPITALIZATION_KEY"
         const val DEBOUNCE_DELAY_MILLIS_KEY = "DEBOUNCE_DELAY_MILLIS_KEY"
     }

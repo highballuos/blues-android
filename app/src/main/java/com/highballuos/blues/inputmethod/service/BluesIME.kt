@@ -1,4 +1,4 @@
-package com.highballuos.blues.service
+package com.highballuos.blues.inputmethod.service
 
 import android.annotation.SuppressLint
 import android.app.ActivityManager
@@ -26,14 +26,19 @@ import com.highballuos.blues.App.Companion.DEBOUNCE_DELAY_MILLIS
 import com.highballuos.blues.App.Companion.PREDICTION
 import com.highballuos.blues.App.Companion.PREFS
 import com.highballuos.blues.R
-import com.highballuos.blues.setting.GlobalSharedPreferences.Companion.CAPITALIZATION_KEY
-import com.highballuos.blues.setting.GlobalSharedPreferences.Companion.DEBOUNCE_DELAY_MILLIS_KEY
+import com.highballuos.blues.inputmethod.keyboard.CandidateView
+import com.highballuos.blues.inputmethod.keyboard.QwertyKeyboard
+import com.highballuos.blues.inputmethod.keyboard.QwertyKeyboardView
+import com.highballuos.blues.inputmethod.service.inputlogic.InputTables
+import com.highballuos.blues.inputmethod.service.inputlogic.KoreanAutomata
+import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.CAPITALIZATION_KEY
+import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.DEBOUNCE_DELAY_MILLIS_KEY
 import kotlinx.coroutines.*
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
 
-class SoftKeyboard : InputMethodService(), KeyboardView.OnKeyboardActionListener, CoroutineScope {
+class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, CoroutineScope {
     companion object {
         /**
          * This boolean indicates the optional example code for performing

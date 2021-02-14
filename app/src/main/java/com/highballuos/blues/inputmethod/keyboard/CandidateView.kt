@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.highballuos.blues.service
+package com.highballuos.blues.inputmethod.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -28,11 +28,12 @@ import com.highballuos.blues.App.Companion.CURRENT_PACKAGE_NAME
 import com.highballuos.blues.App.Companion.PREDICTION
 import com.highballuos.blues.App.Companion.PREFS
 import com.highballuos.blues.R
+import com.highballuos.blues.inputmethod.service.BluesIME
 import kotlinx.android.synthetic.main.layout_candidate.view.*
 
 @SuppressLint("UseCompatLoadingForDrawables")
 class CandidateView(context: Context) : LinearLayout(context) {
-    private var mService: SoftKeyboard? = null
+    private var mService: BluesIME? = null
     private var mSuggestions: List<String>? = null
 
     /**
@@ -73,7 +74,7 @@ class CandidateView(context: Context) : LinearLayout(context) {
      * A connection back to the service to communicate with the text field
      * @param listener
      */
-    fun setService(listener: SoftKeyboard?) {
+    fun setService(listener: BluesIME?) {
         mService = listener
     }
 

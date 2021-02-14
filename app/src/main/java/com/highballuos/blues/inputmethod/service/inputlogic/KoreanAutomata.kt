@@ -1,8 +1,7 @@
-package com.highballuos.blues.service
+package com.highballuos.blues.inputmethod.service.inputlogic
 
 class KoreanAutomata {
     private var mState = 0
-
     // TODO 수정 잦으므로 StringBuilder 고려
     private var mCompositionString = ""
     private var mCompleteString = ""

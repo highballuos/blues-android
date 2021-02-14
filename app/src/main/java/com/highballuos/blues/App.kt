@@ -1,11 +1,11 @@
 package com.highballuos.blues
 
 import android.app.Application
-import com.highballuos.blues.setting.GlobalSharedPreferences
+import com.highballuos.blues.sharedpreferences.PreferenceManager
 
 class App: Application() {
     companion object {
-        lateinit var PREFS: GlobalSharedPreferences
+        lateinit var PREFS: PreferenceManager
 
         // Setting static variables
         var CURRENT_PACKAGE_NAME = ""
@@ -15,7 +15,7 @@ class App: Application() {
     }
 
     override fun onCreate() {
-        PREFS = GlobalSharedPreferences(applicationContext)
+        PREFS = PreferenceManager(applicationContext)
         super.onCreate()
     }
 }

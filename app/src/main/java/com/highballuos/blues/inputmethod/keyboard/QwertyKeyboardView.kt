@@ -1,4 +1,4 @@
-package com.highballuos.blues.service
+package com.highballuos.blues.inputmethod.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -11,7 +11,7 @@ import android.util.AttributeSet
 import android.view.inputmethod.InputMethodSubtype
 import androidx.core.content.ContextCompat
 import com.highballuos.blues.R
-import com.highballuos.blues.util.TypefaceUtils
+import com.highballuos.blues.inputmethod.service.utils.TypefaceUtils
 
 class QwertyKeyboardView : KeyboardView {
     companion object {

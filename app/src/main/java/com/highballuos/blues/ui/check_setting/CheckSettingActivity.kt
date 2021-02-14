@@ -13,7 +13,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
 import com.highballuos.blues.R
-import com.highballuos.blues.service.SoftKeyboard
+import com.highballuos.blues.inputmethod.service.BluesIME
 import com.highballuos.blues.ui.main.MainActivity
 import kotlinx.android.synthetic.main.activity_check_setting.*
 
@@ -173,7 +173,7 @@ class CheckSettingActivity : AppCompatActivity() {
             Settings.Secure.DEFAULT_INPUT_METHOD
         )
         val defaultInputMethod = ComponentName.unflattenFromString(defaultInputMethodId)
-        val mInputMethod = ComponentName(application, SoftKeyboard::class.java)
+        val mInputMethod = ComponentName(application, BluesIME::class.java)
         return mInputMethod == defaultInputMethod
     }
 

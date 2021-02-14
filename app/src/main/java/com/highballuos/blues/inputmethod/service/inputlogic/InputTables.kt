@@ -1,4 +1,4 @@
-package com.highballuos.blues.service
+package com.highballuos.blues.inputmethod.service.inputlogic
 
 object InputTables {
     const val NUM_OF_FIRST = 19

@@ -1,4 +1,4 @@
-package com.highballuos.blues.util
+package com.highballuos.blues.inputmethod.service.utils
 
 import android.graphics.Paint
 import android.graphics.Rect

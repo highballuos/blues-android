@@ -14,7 +14,7 @@
         android:theme="@style/AppTheme">
 
         <service
-            android:name="com.highballuos.blues.service.SoftKeyboard"
+            android:name="com.highballuos.blues.inputmethod.service.BluesIME"
             android:enabled="true"
             android:exported="true"
             android:label="Blues"

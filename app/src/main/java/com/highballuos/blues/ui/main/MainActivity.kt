@@ -9,8 +9,8 @@ import com.highballuos.blues.App.Companion.CAPITALIZATION
 import com.highballuos.blues.App.Companion.DEBOUNCE_DELAY_MILLIS
 import com.highballuos.blues.App.Companion.PREFS
 import com.highballuos.blues.R
-import com.highballuos.blues.setting.GlobalSharedPreferences.Companion.CAPITALIZATION_KEY
-import com.highballuos.blues.setting.GlobalSharedPreferences.Companion.DEBOUNCE_DELAY_MILLIS_KEY
+import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.CAPITALIZATION_KEY
+import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.DEBOUNCE_DELAY_MILLIS_KEY
 import kotlinx.android.synthetic.main.activity_main.*
 
 
