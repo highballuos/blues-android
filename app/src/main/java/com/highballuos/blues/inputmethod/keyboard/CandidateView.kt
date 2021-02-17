@@ -17,13 +17,12 @@ package com.highballuos.blues.inputmethod.keyboard
 
 import android.annotation.SuppressLint
 import android.content.Context
-import android.graphics.BlendMode
-import android.graphics.BlendModeColorFilter
-import android.graphics.Color
-import android.graphics.PorterDuff
+import android.graphics.*
 import android.os.Build
 import android.view.View
 import android.widget.LinearLayout
+import com.airbnb.lottie.LottieProperty
+import com.airbnb.lottie.model.KeyPath
 import com.highballuos.blues.App.Companion.CURRENT_PACKAGE_NAME
 import com.highballuos.blues.App.Companion.PREDICTION
 import com.highballuos.blues.App.Companion.PREFS
@@ -53,7 +52,7 @@ class CandidateView(context: Context) : LinearLayout(context) {
         // first_prediction.setOnClickListener { v -> service?.pickSuggestion((v as TextView).text.toString()) }
         tv_prediction.setOnClickListener { mService?.pickSuggestionManually(0) }
 
-        btn_toggle_prediction.setOnClickListener {
+        btn_lottie_animation.setOnClickListener {
             // 현재 앱이 추론 제외 대상으로 지정되어 있다면 해제, 지정되어 있지 않다면 추가
             if (PREFS.getBoolean(
                     CURRENT_PACKAGE_NAME,
@@ -81,30 +80,39 @@ class CandidateView(context: Context) : LinearLayout(context) {
     fun updateView(isPredictionOn: Boolean) {
         if (isPredictionOn) {
             setSuggestions(emptyList(), completions = false, typedWordValid = false)
-            ripple_pulse_layout.startRippleAnimation()
-            if (Build.VERSION.SDK_INT >= 29) {
-                btn_toggle_prediction.background.colorFilter =
-                    BlendModeColorFilter(Color.GREEN, BlendMode.MULTIPLY)
-            } else {
-                btn_toggle_prediction.background.setColorFilter(
-                    Color.GREEN,
-                    PorterDuff.Mode.MULTIPLY
-                )
-            }
+            btn_lottie_animation.addValueCallback(
+                KeyPath("**"),
+                LottieProperty.COLOR_FILTER,
+                {
+                    return@addValueCallback null
+                }
+            )
         } else {
             setSuggestions(
                 listOf("추론 기능이 꺼져있습니다."),
                 completions = false,
                 typedWordValid = false
             )
-            ripple_pulse_layout.stopRippleAnimation()
-            if (Build.VERSION.SDK_INT >= 29) {
-                btn_toggle_prediction.background.colorFilter =
-                    BlendModeColorFilter(Color.RED, BlendMode.MULTIPLY)
-            } else {
-                btn_toggle_prediction.background.setColorFilter(Color.RED, PorterDuff.Mode.MULTIPLY)
-            }
+            btn_lottie_animation.addValueCallback(
+                KeyPath("**"),
+                LottieProperty.COLOR_FILTER,
+                {
+                    return@addValueCallback PorterDuffColorFilter(
+                        Color.GRAY,
+                        PorterDuff.Mode.MULTIPLY
+                    )
+                }
+            )
         }
+    }
+
+    fun startLottieAnimation() {
+        btn_lottie_animation.playAnimation()
+        btn_lottie_animation.loop(true)
+    }
+
+    fun stopLottieAnimation() {
+        btn_lottie_animation.cancelAnimation()
     }
 
     fun setSuggestions(

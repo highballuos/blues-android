@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 <merge xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:ripple="http://schemas.android.com/apk/res-auto"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
@@ -33,32 +33,12 @@
 
         </LinearLayout>
 
-        <com.highballuos.blues.ui.ripple_pulse_layout.RipplePulseLayout
-            android:id="@+id/ripple_pulse_layout"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="7dp"
-            android:clipChildren="false"
+        <com.airbnb.lottie.LottieAnimationView
+            android:id="@+id/btn_lottie_animation"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
             android:gravity="center"
-            ripple:duration="2000"
-            ripple:endRadius="20dp"
-            ripple:rippleColor="#4CAF50"
-            ripple:rippleType="fill"
-            ripple:startRadius="12dp"
-            ripple:strokeWidth="2dp">
-
-            <ToggleButton
-                android:id="@+id/btn_toggle_prediction"
-                android:layout_width="25dp"
-                android:layout_height="25dp"
-                android:layout_centerInParent="true"
-                android:background="@drawable/circle_button"
-                android:gravity="center"
-                android:text=""
-                android:textOff=""
-                android:textOn="" />
-
-        </com.highballuos.blues.ui.ripple_pulse_layout.RipplePulseLayout>
+            app:lottie_fileName="data.json" />
 
     </LinearLayout>
 </merge>

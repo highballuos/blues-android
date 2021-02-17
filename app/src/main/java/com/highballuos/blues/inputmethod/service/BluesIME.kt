@@ -904,7 +904,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     private fun updateCandidates() {
         if (PREDICTION && mCandidateViewDrawOn) {    // 추론 켜져있고 CandidateView 활성화일 경우에만 작업 실행 (비밀번호)
             updateCandidatesJob = launch {
-                // delay(3000)  // For Test
+                mCandidateView?.startLottieAnimation()
+                delay(3000)  // For Test
                 if (!mCompletionOn) {
                     if (mComposing.isNotEmpty()) {
                         val list = ArrayList<String>()
@@ -918,6 +919,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)
                     }
                 }
+                mCandidateView?.stopLottieAnimation()
             }
         }
     }
