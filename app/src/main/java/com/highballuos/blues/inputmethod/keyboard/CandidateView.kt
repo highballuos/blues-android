@@ -18,9 +18,10 @@ package com.highballuos.blues.inputmethod.keyboard
 import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.*
-import android.os.Build
 import android.view.View
 import android.widget.LinearLayout
+import android.widget.TextView
+import com.airbnb.lottie.LottieAnimationView
 import com.airbnb.lottie.LottieProperty
 import com.airbnb.lottie.model.KeyPath
 import com.highballuos.blues.App.Companion.CURRENT_PACKAGE_NAME
@@ -34,12 +35,17 @@ import kotlinx.android.synthetic.main.layout_candidate.view.*
 class CandidateView(context: Context) : LinearLayout(context) {
     private var mService: BluesIME? = null
     private var mSuggestions: List<String>? = null
+    private var mLottieButton: LottieAnimationView? = null
+    private var mPredictionTextView: TextView? = null
 
     /**
      * Construct a CandidateView for showing suggested words for completion.
      */
     init {
         View.inflate(context, R.layout.layout_candidate, this)
+
+        mLottieButton = btn_lottie_animation
+        mPredictionTextView = tv_prediction
 
         updateView(
             !PREFS.getBoolean(
@@ -50,9 +56,15 @@ class CandidateView(context: Context) : LinearLayout(context) {
 
         // 일단은 prediction 하나 고정이므로 index 0으로 고정
         // first_prediction.setOnClickListener { v -> service?.pickSuggestion((v as TextView).text.toString()) }
-        tv_prediction.setOnClickListener { mService?.pickSuggestionManually(0) }
+        mPredictionTextView?.setOnClickListener {
+            if (PREDICTION) {
+                mService?.pickSuggestionManually(0)
+            }
+            // 제안 클릭하면 새싹 사라지도록
+            initializeLottieAnimationState()
+        }
 
-        btn_lottie_animation.setOnClickListener {
+        mLottieButton?.setOnClickListener {
             // 현재 앱이 추론 제외 대상으로 지정되어 있다면 해제, 지정되어 있지 않다면 추가
             if (PREFS.getBoolean(
                     CURRENT_PACKAGE_NAME,
@@ -65,6 +77,7 @@ class CandidateView(context: Context) : LinearLayout(context) {
                 PREFS.setBoolean(CURRENT_PACKAGE_NAME, true)    // 항목 추가
                 PREDICTION = false  // 추론 기능 비활성화
             }
+            mService?.clearExistingJob()
             updateView(PREDICTION)
         }
     }
@@ -80,20 +93,21 @@ class CandidateView(context: Context) : LinearLayout(context) {
     fun updateView(isPredictionOn: Boolean) {
         if (isPredictionOn) {
             setSuggestions(emptyList(), completions = false, typedWordValid = false)
-            btn_lottie_animation.addValueCallback(
+            mLottieButton?.addValueCallback(
                 KeyPath("**"),
                 LottieProperty.COLOR_FILTER,
                 {
                     return@addValueCallback null
                 }
             )
+            initializeLottieAnimationState()
         } else {
             setSuggestions(
                 listOf("추론 기능이 꺼져있습니다."),
                 completions = false,
                 typedWordValid = false
             )
-            btn_lottie_animation.addValueCallback(
+            mLottieButton?.addValueCallback(
                 KeyPath("**"),
                 LottieProperty.COLOR_FILTER,
                 {
@@ -103,16 +117,22 @@ class CandidateView(context: Context) : LinearLayout(context) {
                     )
                 }
             )
+            initializeLottieAnimationState()
         }
     }
 
-    fun startLottieAnimation() {
-        btn_lottie_animation.playAnimation()
-        btn_lottie_animation.loop(true)
+    fun playLottieAnimationWithLoop() {
+        mLottieButton?.playAnimation()
+        mLottieButton?.loop(true)
     }
 
-    fun stopLottieAnimation() {
-        btn_lottie_animation.cancelAnimation()
+    fun disableLottieAnimationLoop() {
+        mLottieButton?.loop(false)
+    }
+
+    fun initializeLottieAnimationState() {
+        mLottieButton?.cancelAnimation()
+        mLottieButton?.progress = 0f
     }
 
     fun setSuggestions(
@@ -127,13 +147,13 @@ class CandidateView(context: Context) : LinearLayout(context) {
     }
 
     private fun updatePredictions(prediction: List<String>) {
-        tv_prediction.text = ""
+        mPredictionTextView?.text = ""
         if (prediction.isNotEmpty()) {
-            tv_prediction.text = prediction[0]
-            tv_prediction.setBackgroundResource(R.drawable.bordered)
+            mPredictionTextView?.text = prediction[0]
+            mPredictionTextView?.setBackgroundResource(R.drawable.bordered)
         } else {
-            tv_prediction.text = ""
-            tv_prediction.setBackgroundResource(0)
+            mPredictionTextView?.text = ""
+            mPredictionTextView?.setBackgroundResource(0)
         }
     }
 

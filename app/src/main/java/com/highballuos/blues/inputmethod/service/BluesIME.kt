@@ -397,12 +397,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             }
         }
 
-        // 현재 Foreground 에서 실행중인 앱이 추론 기능 Off 로 설정되어있는지 확인
-        CURRENT_PACKAGE_NAME = getCurrentForegroundAppPackageName()
-        PREDICTION = !PREFS.getBoolean(CURRENT_PACKAGE_NAME, false)
-        // CandidateView 버튼, 텍스트 뷰 업데이트
-        mCandidateView?.updateView(PREDICTION)
-
         // 엔터키 역할을 그때 그때 상황에 따라 다르게 설정하는 코드
         // ex) 검색창에서는 엔터 치면 검색, 카카오톡에서는 엔터 치면 줄바꿈
         // Update the label on the enter key, depending on what the application
@@ -472,6 +466,12 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         setKeyboardToInputView(mCurrentKeyboard)
 
         mInputView!!.closing()
+
+        // 현재 Foreground 에서 실행중인 앱이 추론 기능 Off 로 설정되어있는지 확인
+        CURRENT_PACKAGE_NAME = getCurrentForegroundAppPackageName()
+        PREDICTION = !PREFS.getBoolean(CURRENT_PACKAGE_NAME, false)
+        // CandidateView 버튼, 텍스트 뷰 업데이트
+        mCandidateView?.updateView(PREDICTION)
 
         if (mCandidateViewDrawOn && !mCompletionOn) {    // 제안 가능, 에디터 자체 완성 기능 없을 때
             setCandidatesViewShown(true)
@@ -878,15 +878,22 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     }
 
     /**
+     * [clearExistingJob]
+     * 진행중인 Coroutine 중단, 예정된 작업 Queue 제거
+     */
+    fun clearExistingJob() {
+        updateCandidatesJob?.cancel()
+        mHandler.removeCallbacks(mRunnable)
+    }
+
+    /**
      * [updateCandidatesAsDebounce]
      * CandidateView 제안 목록 업데이트 요청을 Debouncing
-     * 진행중인 Coroutine 중단, delay 시간 초기화
      * [onKey]에는 쉬프트, 언어변경 같은 키 입력도 포함되어 있어 제안 문자열과 관계 없는 경우도 존재
      */
     private fun updateCandidatesAsDebounce() {
         Log.v(logTAG, "updateCandidates() 함수 시작")
-        updateCandidatesJob?.cancel()
-        mHandler.removeCallbacks(mRunnable)
+        clearExistingJob()
         if (PREDICTION) {
             mHandler.postDelayed(mRunnable, DEBOUNCE_DELAY_MILLIS)
         } else {
@@ -904,7 +911,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     private fun updateCandidates() {
         if (PREDICTION && mCandidateViewDrawOn) {    // 추론 켜져있고 CandidateView 활성화일 경우에만 작업 실행 (비밀번호)
             updateCandidatesJob = launch {
-                mCandidateView?.startLottieAnimation()
+                mCandidateView?.playLottieAnimationWithLoop()
                 delay(3000)  // For Test
                 if (!mCompletionOn) {
                     if (mComposing.isNotEmpty()) {
@@ -919,7 +926,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)
                     }
                 }
-                mCandidateView?.stopLottieAnimation()
+                mCandidateView?.disableLottieAnimationLoop()
             }
         }
     }
@@ -1003,6 +1010,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             length > 0 -> {
                 currentInputConnection.commitText("", 0)
                 initializeInputState()   // "" 되는 순간 진행중이던 추론 중단하고 Suggestion 초기화
+                mCandidateView?.initializeLottieAnimationState()    // 애니메이션도 중단
             }
             else -> {
                 Log.v(logTAG, "KEYCODE_DEL 실행")
