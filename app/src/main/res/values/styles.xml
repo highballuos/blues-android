@@ -1,9 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="AppTheme" parent="Theme.AppCompat.Light.NoActionBar"/>
-    <style name="SplashTheme" parent="Theme.AppCompat.NoActionBar">
-        <item name="android:windowBackground">@drawable/splash</item>
-    </style>
     <style name="Candidate" parent="TextAppearance.AppCompat">
         <item name="android:textSize">@dimen/candidate_font_height</item>
         <item name="android:paddingBottom">@dimen/candidate_vertical_padding</item>

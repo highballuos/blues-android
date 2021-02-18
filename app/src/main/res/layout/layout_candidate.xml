@@ -17,7 +17,7 @@
             android:id="@+id/btn_lottie_animation"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:layout_marginLeft="3dp"
+            android:layout_marginStart="3dp"
             android:gravity="center"
             app:lottie_fileName="data.json" />
 
