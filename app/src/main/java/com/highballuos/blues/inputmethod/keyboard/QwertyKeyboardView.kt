@@ -17,6 +17,10 @@ class QwertyKeyboardView : KeyboardView {
     companion object {
         const val KEYCODE_OPTIONS = -100
         const val KEYCODE_LANGUAGE_SWITCH = -101
+        const val KEYCODE_ENTER_AS_GO = -102
+        const val KEYCODE_ENTER_AS_NEXT = -103
+        const val KEYCODE_ENTER_AS_SEARCH = -104
+        const val KEYCODE_ENTER_AS_SEND = -105
     }
 
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)

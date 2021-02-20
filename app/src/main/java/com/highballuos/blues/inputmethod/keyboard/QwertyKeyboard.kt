@@ -10,7 +10,7 @@ import android.view.inputmethod.EditorInfo
 import android.view.inputmethod.InputMethodManager
 import com.highballuos.blues.R
 
-class QwertyKeyboard: Keyboard {
+class QwertyKeyboard : Keyboard {
     private var mEnterKey: Key? = null
     private var mSpaceKey: Key? = null
 
@@ -110,27 +110,27 @@ class QwertyKeyboard: Keyboard {
                 mEnterKey!!.iconPreview = null
                 mEnterKey!!.icon = null
                 mEnterKey!!.label = res.getText(R.string.label_go_key)
-                mEnterKey!!.codes[0] = KEYCODE_DONE
+                mEnterKey!!.codes[0] = QwertyKeyboardView.KEYCODE_ENTER_AS_GO
             }
             EditorInfo.IME_ACTION_NEXT -> {
                 Log.v("EditorInfo Log", "EditorInfo.IME_ACTION_NEXT")
                 mEnterKey!!.iconPreview = null
                 mEnterKey!!.icon = null
                 mEnterKey!!.label = res.getText(R.string.label_next_key)
-                mEnterKey!!.codes[0] = KEYCODE_DONE
+                mEnterKey!!.codes[0] = QwertyKeyboardView.KEYCODE_ENTER_AS_NEXT
             }
             EditorInfo.IME_ACTION_SEARCH -> {
                 Log.v("EditorInfo Log", "EditorInfo.IME_ACTION_SEARCH")
                 mEnterKey!!.icon = res.getDrawable(R.drawable.ic_baseline_search_24)
                 mEnterKey!!.label = null
-                mEnterKey!!.codes[0] = KEYCODE_DONE
+                mEnterKey!!.codes[0] = QwertyKeyboardView.KEYCODE_ENTER_AS_SEARCH
             }
             EditorInfo.IME_ACTION_SEND -> {
                 Log.v("EditorInfo Log", "EditorInfo.IME_ACTION_SEND")
                 mEnterKey!!.iconPreview = null
                 mEnterKey!!.icon = null
                 mEnterKey!!.label = res.getText(R.string.label_send_key)
-                mEnterKey!!.codes[0] = KEYCODE_DONE
+                mEnterKey!!.codes[0] = QwertyKeyboardView.KEYCODE_ENTER_AS_SEND
             }
             EditorInfo.IME_ACTION_DONE -> {
                 Log.v("EditorInfo Log", "EditorInfo.IME_ACTION_DONE")

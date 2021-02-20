@@ -807,12 +807,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         currentInputConnection.sendKeyEvent(
             KeyEvent(KeyEvent.ACTION_UP, keyEventCode)
         )
-        // Twitch...?
-        if (keyEventCode == KeyEvent.KEYCODE_ENTER) {
-            currentInputConnection.sendKeyEvent(
-                KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode)
-            )
-        }
     }
 
     /**
@@ -850,10 +844,26 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             Keyboard.KEYCODE_DELETE -> handleBackspace()
             Keyboard.KEYCODE_SHIFT -> handleShift()
             Keyboard.KEYCODE_CANCEL -> handleClose()
-            Keyboard.KEYCODE_DONE -> keyDownUp(KeyEvent.KEYCODE_ENTER)
+            Keyboard.KEYCODE_MODE_CHANGE -> mInputView?.let { handleModeChange() }
             QwertyKeyboardView.KEYCODE_LANGUAGE_SWITCH -> handleLanguageSwitch()
             QwertyKeyboardView.KEYCODE_OPTIONS -> return
-            Keyboard.KEYCODE_MODE_CHANGE -> mInputView?.let { handleModeChange() }
+
+            // EnterKey Action
+            Keyboard.KEYCODE_DONE -> currentInputConnection.performEditorAction(EditorInfo.IME_ACTION_DONE)
+            QwertyKeyboardView.KEYCODE_ENTER_AS_GO -> currentInputConnection.performEditorAction(
+                EditorInfo.IME_ACTION_GO
+            )
+            QwertyKeyboardView.KEYCODE_ENTER_AS_SEND -> currentInputConnection.performEditorAction(
+                EditorInfo.IME_ACTION_SEND
+            )
+            QwertyKeyboardView.KEYCODE_ENTER_AS_SEARCH -> currentInputConnection.performEditorAction(
+                EditorInfo.IME_ACTION_SEARCH
+            )
+            QwertyKeyboardView.KEYCODE_ENTER_AS_NEXT -> currentInputConnection.performEditorAction(
+                EditorInfo.IME_ACTION_NEXT
+            )
+
+            // Character
             else -> handleCharacter(primaryCode, keyCodes)
         }
     }
@@ -1374,8 +1384,13 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         // 따라서 기본값을 false 로 두고 Character 일 때만 켜주는 형식으로...
         when (primaryCode) {
             Keyboard.KEYCODE_DELETE, Keyboard.KEYCODE_SHIFT, Keyboard.KEYCODE_CANCEL,
-            Keyboard.KEYCODE_DONE, QwertyKeyboardView.KEYCODE_LANGUAGE_SWITCH,
-            QwertyKeyboardView.KEYCODE_OPTIONS, Keyboard.KEYCODE_MODE_CHANGE,
+            Keyboard.KEYCODE_DONE, Keyboard.KEYCODE_MODE_CHANGE,
+            QwertyKeyboardView.KEYCODE_LANGUAGE_SWITCH,
+            QwertyKeyboardView.KEYCODE_OPTIONS,
+            QwertyKeyboardView.KEYCODE_ENTER_AS_GO,
+            QwertyKeyboardView.KEYCODE_ENTER_AS_SEARCH,
+            QwertyKeyboardView.KEYCODE_ENTER_AS_SEND,
+            QwertyKeyboardView.KEYCODE_ENTER_AS_NEXT,
             10, 32 -> mInputView?.isPreviewEnabled = false
             else -> mInputView?.isPreviewEnabled = true
         }
