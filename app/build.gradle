@@ -32,6 +32,10 @@ android {
     kotlinOptions {
         jvmTarget = '1.8'
     }
+
+    aaptOptions {
+        noCompress "tflite"
+    }
 }
 
 dependencies {
@@ -49,4 +53,7 @@ dependencies {
 
     // Lottie
     implementation 'com.airbnb.android:lottie:3.6.1'
+
+    // Tensorflow Lite
+    implementation 'org.tensorflow:tensorflow-lite:2.0.0'
 }
