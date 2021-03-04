@@ -59,7 +59,7 @@ dependencies {
     implementation 'com.airbnb.android:lottie:3.6.1'
 
     // Tensorflow Lite
-    // implementation 'org.tensorflow:tensorflow-lite:2.3.0'
+    implementation 'org.tensorflow:tensorflow-lite:2.3.0'
     // implementation 'org.tensorflow:tensorflow-lite-gpu:2.3.0'
     // implementation 'org.tensorflow:tensorflow-lite-support:0.0.0-nightly-SNAPSHOT'
     // This dependency adds the necessary TF op support.

@@ -100,8 +100,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
 
     private val logTAG = "SoftKeyboard.kt"
 
-//    private var tflite: Interpreter? = null
-
     /**
      * [onCreate]
      * 서비스 LifeCycle 내에서 1회 호출
@@ -113,7 +111,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         super.onCreate()
         initializeSettingValues()
         job = SupervisorJob()   // job 초기화 (자식 Coroutine 이 독립적으로 실패할 수 있게 Supervisor)
-        // tflite = getInterpreter("model.tflite")
         mInputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -264,7 +261,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             currentAppPackageName = am.getRunningTasks(1)[0].topActivity?.packageName ?: ""
         }
         Log.v(logTAG, "현재 실행중인 앱의 패키지 이름 : $currentAppPackageName")
-        Toast.makeText(this, currentAppPackageName, Toast.LENGTH_SHORT).show()
         return currentAppPackageName
     }
 
@@ -928,17 +924,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                 if (!mCompletionOn) {
                     if (mComposing.isNotEmpty()) {
                         val list = ArrayList<String>()
-
-//                        val inputShape = tflite?.getInputTensor(1)?.shape()
-//                        Log.e("INPUT_TENSOR_WHOLE", Arrays.toString(inputShape))
-//                        var outputShape = tflite?.getOutputTensor(1)?.shape()
-//                        Log.e("INPUT_TENSOR_WHOLE", Arrays.toString(outputShape))
-//
-//                        val inputDataType = tflite?.getInputTensor(1)?.dataType()
-//                        Log.e("INPUT_DATA_TYPE", inputDataType.toString())
-//                        var outputDataType = tflite?.getOutputTensor(1)?.dataType()
-//                        Log.e("INPUT_DATA_TYPE", outputDataType.toString())
-
                         setSuggestions(list, completions = true, typedWordValid = true)
                     } else {
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)
@@ -1413,24 +1398,4 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         // 키에서 떨어졌을 때 다시 기본값으로
         mInputView?.isPreviewEnabled = false
     }
-
-//    private fun getInterpreter(modelPath: String): Interpreter? {
-//        try {
-//            return Interpreter(loadModelFile(this, modelPath))
-//        } catch (e: Exception) {
-//            e.printStackTrace()
-//            Log.v("모델 불러오기 오류", "모델 불러오기 오류")
-//        }
-//        return null
-//    }
-//
-//    @Throws(IOException::class)
-//    fun loadModelFile(ctx: Context, modelPath: String?): MappedByteBuffer {
-//        val fileDescriptor = ctx.assets.openFd(modelPath!!)
-//        val inputStream = FileInputStream(fileDescriptor.fileDescriptor)
-//        val fileChannel: FileChannel = inputStream.channel
-//        val startOffset = fileDescriptor.startOffset
-//        val declaredLength = fileDescriptor.declaredLength
-//        return fileChannel.map(FileChannel.MapMode.READ_ONLY, startOffset, declaredLength)
-//    }
 }
