@@ -924,6 +924,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                 if (!mCompletionOn) {
                     if (mComposing.isNotEmpty()) {
                         val list = ArrayList<String>()
+                        list.add(mComposing.toString().reversed())
                         setSuggestions(list, completions = true, typedWordValid = true)
                     } else {
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)

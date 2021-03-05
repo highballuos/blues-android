@@ -150,7 +150,7 @@ class CandidateView(context: Context) : LinearLayout(context) {
         mPredictionTextView?.text = ""
         if (prediction.isNotEmpty()) {
             mPredictionTextView?.text = prediction[0]
-            mPredictionTextView?.setBackgroundResource(R.drawable.bordered)
+            mPredictionTextView?.setBackgroundResource(R.drawable.suggestion_background)
         } else {
             mPredictionTextView?.text = ""
             mPredictionTextView?.setBackgroundResource(0)

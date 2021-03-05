@@ -32,11 +32,11 @@
                 style="@style/Candidate"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="5dp"
-                android:background="@drawable/bordered"
+                android:layout_margin="5dp"
+                android:background="@drawable/suggestion_background"
                 android:gravity="center"
                 android:paddingHorizontal="10dp"
-                android:textColor="@color/keyboard_key_text"
+                android:textColor="@color/keyboard_key_special_text"
                 tools:text="First Prediction" />
 
         </LinearLayout>
