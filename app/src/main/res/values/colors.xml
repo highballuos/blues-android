@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <color name="white">#FFFFFF</color>
     <color name="candidate_normal">#FF000000</color>
     <color name="candidate_recommended">#FFE35900</color>
     <color name="candidate_other">#ff808080</color>
     <color name="candidate_background">#FFFFFF</color>
-    <color name="keyboard_background">#DDDDDD</color>
-    <color name="white">#FFFFFF</color>
-    <color name="keyboard_key_color">#555659</color>
-    <color name="splash_background">#78B3C2</color>
+    <color name="keyboard_background">#E6E6E6</color>
+    <color name="keyboard_key_normal_background">#FFFFFF</color>
+    <color name="keyboard_key_pressed_background">#B6B6B6</color>
+    <color name="keyboard_key_special_background">#CFCFCF</color>
+    <color name="keyboard_key_text">#000000</color>
+    <color name="keyboard_key_special_text">#373737</color>
 </resources>

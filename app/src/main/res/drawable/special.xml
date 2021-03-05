@@ -18,7 +18,7 @@
                 android:bottomRightRadius="4dp"
                 android:topLeftRadius="4dp"
                 android:topRightRadius="4dp" />
-            <solid android:color="#C2C2C2" />
+            <solid android:color="@color/keyboard_key_special_background" />
         </shape>
     </item>
 </layer-list>

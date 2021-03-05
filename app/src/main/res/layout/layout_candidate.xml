@@ -36,7 +36,7 @@
                 android:background="@drawable/bordered"
                 android:gravity="center"
                 android:paddingHorizontal="10dp"
-                android:textColor="@color/keyboard_key_color"
+                android:textColor="@color/keyboard_key_text"
                 tools:text="First Prediction" />
 
         </LinearLayout>

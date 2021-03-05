@@ -9,5 +9,5 @@
     android:keyPreviewLayout="@layout/key_preview"
     android:keyPreviewHeight="50dp"
     android:keyPreviewOffset="-2dp"
-    android:keyTextColor="@color/keyboard_key_color"
+    android:keyTextColor="@color/keyboard_key_text"
     android:shadowRadius="0.0" />

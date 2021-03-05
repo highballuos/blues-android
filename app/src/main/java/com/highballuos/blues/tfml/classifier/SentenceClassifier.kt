@@ -56,8 +56,7 @@ class SentenceClassifier(ctx: Context) {
     companion object {
         const val DIM_IMG_SIZE_HEIGHT = 28
         const val DIM_IMG_SIZE_WIDTH = 28
-        private const val MODEL_FILE = "10/model10.tflite"
-        private const val LABELS_FILE = "10/labels.csv"
+        private const val MODEL_FILE = "model.tflite"
         private const val DIM_BATCH_SIZE = 1
         private const val DIM_PIXEL_SIZE = 1
     }

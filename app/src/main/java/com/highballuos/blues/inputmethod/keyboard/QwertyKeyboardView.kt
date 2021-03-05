@@ -74,7 +74,11 @@ class QwertyKeyboardView : KeyboardView {
                 10,     // Line Feed
                 Keyboard.KEYCODE_DONE,     // Enter
                 Keyboard.KEYCODE_MODE_CHANGE,
-                KEYCODE_LANGUAGE_SWITCH -> {
+                KEYCODE_LANGUAGE_SWITCH,
+                KEYCODE_ENTER_AS_GO,
+                KEYCODE_ENTER_AS_SEARCH,
+                KEYCODE_ENTER_AS_SEND,
+                KEYCODE_ENTER_AS_NEXT,-> {
                     var dr: Drawable? = null
                     dr = if (key.pressed) {
                         context.resources.getDrawable(R.drawable.pressed) as Drawable
@@ -84,12 +88,12 @@ class QwertyKeyboardView : KeyboardView {
                     dr.setBounds(key.x, key.y, key.x + key.width, key.y + key.height)
                     canvas?.let { dr.draw(it) }
 
-                    val paint = Paint()
-                    paint.textAlign = Paint.Align.CENTER
-                    paint.textSize = 44F
-                    paint.color = ContextCompat.getColor(context, R.color.keyboard_key_color)
-
                     if (key.label != null) {
+                        val paint = Paint()
+                        paint.textAlign = Paint.Align.CENTER
+                        paint.textSize = 44F
+                        paint.color = ContextCompat.getColor(context, R.color.keyboard_key_special_text)
+
                         val labelCharHeight = TypefaceUtils.getReferenceCharHeight(paint)
 
                         canvas?.drawText(
