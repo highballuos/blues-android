@@ -31,9 +31,14 @@ import com.highballuos.blues.inputmethod.keyboard.QwertyKeyboard
 import com.highballuos.blues.inputmethod.keyboard.QwertyKeyboardView
 import com.highballuos.blues.inputmethod.service.inputlogic.InputTables
 import com.highballuos.blues.inputmethod.service.inputlogic.KoreanAutomata
+import com.highballuos.blues.network.RestyleAPI
+import com.highballuos.blues.network.Result
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.CAPITALIZATION_KEY
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.DEBOUNCE_DELAY_MILLIS_KEY
+import com.highballuos.blues.tfml.classifier.SentenceClassifier
 import kotlinx.coroutines.*
+import java.io.IOException
+import java.lang.Exception
 import java.util.*
 import kotlin.coroutines.CoroutineContext
 
@@ -98,6 +103,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     private val KEYCODE_WIN_LEFT = 117 // KeyEvent.KEYCODE_META_LEFT is available from API 11
     private val KEYCODE_SYSREQ = 120 // KeyEvent.KEYCODE_SYSREQ is available from API 11
 
+    private var classifier: SentenceClassifier? = null
     private val logTAG = "SoftKeyboard.kt"
 
     /**
@@ -111,6 +117,12 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         super.onCreate()
         initializeSettingValues()
         job = SupervisorJob()   // job 초기화 (자식 Coroutine 이 독립적으로 실패할 수 있게 Supervisor)
+        try {
+            classifier = SentenceClassifier(this)
+        } catch (e: Exception) {
+            e.printStackTrace()
+            Log.v("##############", "모델 불러오기 실패")
+        }
         mInputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -925,6 +937,27 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                     if (mComposing.isNotEmpty()) {
                         val list = ArrayList<String>()
                         list.add(mComposing.toString().reversed())
+
+                        /*
+                        val api = RestyleAPI.create()
+                        var suggestionString = ""
+                        withContext(Dispatchers.IO) {
+                            val instances = HashMap<String, List<HashMap<String, String>>>()
+                            val innerHashMap = hashMapOf<String, String>()
+                            innerHashMap["context"] = "金계란, 돈 주고도 못산다…대형마트 1인당 한판만"
+                            innerHashMap["comment"] = mComposing.toString()
+                            val hashMapList = listOf(innerHashMap)
+                            instances["instances"] = hashMapList
+                            val response = api.getValues(instances)
+                            if (response.isSuccessful) {
+                                val resultInstance: Result? = response.body()
+                                resultInstance?.let {
+
+                                }
+                            }
+                        }
+                        */
+
                         setSuggestions(list, completions = true, typedWordValid = true)
                     } else {
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)
