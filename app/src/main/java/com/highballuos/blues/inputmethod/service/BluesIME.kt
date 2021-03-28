@@ -18,7 +18,6 @@ import android.util.Log
 import android.view.*
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.inputmethod.*
-import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.highballuos.blues.App.Companion.CAPITALIZATION
 import com.highballuos.blues.App.Companion.CURRENT_PACKAGE_NAME
@@ -31,13 +30,12 @@ import com.highballuos.blues.inputmethod.keyboard.QwertyKeyboard
 import com.highballuos.blues.inputmethod.keyboard.QwertyKeyboardView
 import com.highballuos.blues.inputmethod.service.inputlogic.InputTables
 import com.highballuos.blues.inputmethod.service.inputlogic.KoreanAutomata
-import com.highballuos.blues.network.RestyleAPI
+import com.highballuos.blues.network.DetectAPI
 import com.highballuos.blues.network.Result
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.CAPITALIZATION_KEY
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.DEBOUNCE_DELAY_MILLIS_KEY
 import com.highballuos.blues.tfml.classifier.SentenceClassifier
 import kotlinx.coroutines.*
-import java.io.IOException
 import java.lang.Exception
 import java.util.*
 import kotlin.coroutines.CoroutineContext
@@ -935,30 +933,25 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                 mCandidateView?.playLottieAnimationWithLoop()
                 if (!mCompletionOn) {
                     if (mComposing.isNotEmpty()) {
-                        val list = ArrayList<String>()
-                        list.add(mComposing.toString().reversed())
+                        val suggestionList = ArrayList<String>()
 
-                        /*
-                        val api = RestyleAPI.create()
-                        var suggestionString = ""
+                        // API 호출
+                        val api = DetectAPI.create()
                         withContext(Dispatchers.IO) {
-                            val instances = HashMap<String, List<HashMap<String, String>>>()
-                            val innerHashMap = hashMapOf<String, String>()
-                            innerHashMap["context"] = "金계란, 돈 주고도 못산다…대형마트 1인당 한판만"
-                            innerHashMap["comment"] = mComposing.toString()
-                            val hashMapList = listOf(innerHashMap)
-                            instances["instances"] = hashMapList
-                            val response = api.getValues(instances)
-                            if (response.isSuccessful) {
-                                val resultInstance: Result? = response.body()
-                                resultInstance?.let {
+                            val requestBody = hashMapOf<String, List<String>>()
+                            requestBody["instances"] = listOf(mComposing.toString())
 
+                            // Response 처리
+                            val response = api.getValues(requestBody)
+                            if (response.isSuccessful) {
+                                val responseBody: Result? = response.body()
+                                responseBody?.let {
+                                    suggestionList.add(responseBody.predictions[0][0])
                                 }
                             }
                         }
-                        */
 
-                        setSuggestions(list, completions = true, typedWordValid = true)
+                        setSuggestions(suggestionList, completions = true, typedWordValid = true)
                     } else {
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)
                     }
@@ -1245,7 +1238,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                     // 한국어 입력이 아니므로 조합중인 문자 초기화
                     koreanAutomata?.finishAutomataWithoutInput()
                 }
-                updateShiftKeyState(currentInputEditorInfo)
                 updateCandidatesAsDebounce()
             }
         } else {    // mComposition false 일 경우 입력하는 족족 바로 Commit 되도록
@@ -1258,6 +1250,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             koreanAutomata?.finishAutomataWithoutInput()
             currentInputConnection.commitText(mPrimaryCode.toChar().toString(), 1)
         }
+        updateShiftKeyState(currentInputEditorInfo)
     }
 
     /**

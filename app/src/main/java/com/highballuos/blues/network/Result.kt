@@ -1,5 +1,5 @@
 package com.highballuos.blues.network
 
 data class Result(
-    var restyledText: String
+    val predictions: List<List<String>>
 )
