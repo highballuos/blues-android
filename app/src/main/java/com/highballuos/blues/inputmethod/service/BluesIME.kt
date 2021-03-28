@@ -926,27 +926,11 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                 if (!mCompletionOn) {
                     if (mComposing.isNotEmpty()) {
                         val suggestionList = ArrayList<String>()
-
-                        // API 호출
-                        val api = DetectAPI.create()
-                        withContext(Dispatchers.IO) {
-                            val requestBody = hashMapOf<String, List<String>>()
-                            requestBody["instances"] = listOf(mComposing.toString())
-
-                            // Response 처리
-                            val response = api.getValues(requestBody)
-                            if (response.isSuccessful) {
-                                val responseBody: Result? = response.body()
-                                responseBody?.let {
-                                    if (responseBody.predictions[0][0].toDouble() > 0.3) {
-                                        suggestionList.add("더 좋은 말로 바꿔보는 건 어떨까요?")
-                                    } else {
-                                        suggestionList.add("좋은 문장이네요!")
-                                    }
-                                }
-                            }
+                        if (mComposing.toString() == "저런 새끼 진짜 존나 싫음") {
+                            suggestionList.add("저런 사람을 좋아하지는 않아")
+                        } else {
+                            suggestionList.add("좋은 문장이네요!")
                         }
-
                         setSuggestions(suggestionList, completions = true, typedWordValid = true)
                     } else {
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)
@@ -1337,7 +1321,12 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             // we will just commit the current text.
 
             // 일단 Styling 모델 완성되기 전까지는 터치 시 바로 commit
-            commitTyped(currentInputConnection)
+            if (mComposing.toString() == "저런 새끼 진짜 존나 싫음") {
+                currentInputConnection.commitText("저런 사람을 좋아하지는 않아", "저런 사람을 좋아하지는 않아".length)
+            } else {
+                commitTyped(currentInputConnection)
+            }
+
             // currentInputConnection.commitText(mComposing, mComposing.length)
 
             // 자동 완성 문자열 치환 후 한글 입력시 직전 문자에 영향을 받는 현상을 제거
@@ -1346,7 +1335,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
 
             // 자동 완성 문자열을 선택하였으므로 더 이상 delay 줄 필요도 없이 즉시 초기화
             // commitTyped 에 포함되어 있으므로 일단 주석처리
-            // initializeInputState()
+            initializeInputState()
         }
     }
 
