@@ -34,7 +34,6 @@ import com.highballuos.blues.network.DetectAPI
 import com.highballuos.blues.network.Result
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.CAPITALIZATION_KEY
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.DEBOUNCE_DELAY_MILLIS_KEY
-import com.highballuos.blues.tfml.classifier.SentenceClassifier
 import kotlinx.coroutines.*
 import java.lang.Exception
 import java.util.*
@@ -101,7 +100,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     private val KEYCODE_WIN_LEFT = 117 // KeyEvent.KEYCODE_META_LEFT is available from API 11
     private val KEYCODE_SYSREQ = 120 // KeyEvent.KEYCODE_SYSREQ is available from API 11
 
-    private var classifier: SentenceClassifier? = null
     private val logTAG = "SoftKeyboard.kt"
 
     /**
@@ -115,12 +113,6 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         super.onCreate()
         initializeSettingValues()
         job = SupervisorJob()   // job 초기화 (자식 Coroutine 이 독립적으로 실패할 수 있게 Supervisor)
-        try {
-            classifier = SentenceClassifier(this)
-        } catch (e: Exception) {
-            e.printStackTrace()
-            Log.v("##############", "모델 불러오기 실패")
-        }
         mInputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -946,7 +938,11 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                             if (response.isSuccessful) {
                                 val responseBody: Result? = response.body()
                                 responseBody?.let {
-                                    suggestionList.add(responseBody.predictions[0][0])
+                                    if (responseBody.predictions[0][0].toDouble() > 0.3) {
+                                        suggestionList.add("더 좋은 말로 바꿔보는 건 어떨까요?")
+                                    } else {
+                                        suggestionList.add("좋은 문장이네요!")
+                                    }
                                 }
                             }
                         }
@@ -1339,14 +1335,18 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             // If we were generating candidate suggestions for the current
             // text, we would commit one of them here.  But for this sample,
             // we will just commit the current text.
-            currentInputConnection.commitText(mComposing.reverse(), mComposing.length)
+
+            // 일단 Styling 모델 완성되기 전까지는 터치 시 바로 commit
+            commitTyped(currentInputConnection)
+            // currentInputConnection.commitText(mComposing, mComposing.length)
 
             // 자동 완성 문자열 치환 후 한글 입력시 직전 문자에 영향을 받는 현상을 제거
             // mCompleteString, mCompositionString 초기화
             koreanAutomata?.finishAutomataWithoutInput()
 
             // 자동 완성 문자열을 선택하였으므로 더 이상 delay 줄 필요도 없이 즉시 초기화
-            initializeInputState()
+            // commitTyped 에 포함되어 있으므로 일단 주석처리
+            // initializeInputState()
         }
     }
 
