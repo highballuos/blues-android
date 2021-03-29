@@ -18,6 +18,7 @@ import android.util.Log
 import android.view.*
 import android.view.View.SYSTEM_UI_FLAG_LIGHT_NAVIGATION_BAR
 import android.view.inputmethod.*
+import android.widget.Toast
 import androidx.core.content.ContextCompat
 import com.highballuos.blues.App.Companion.CAPITALIZATION
 import com.highballuos.blues.App.Companion.CURRENT_PACKAGE_NAME
@@ -31,6 +32,7 @@ import com.highballuos.blues.inputmethod.keyboard.QwertyKeyboardView
 import com.highballuos.blues.inputmethod.service.inputlogic.InputTables
 import com.highballuos.blues.inputmethod.service.inputlogic.KoreanAutomata
 import com.highballuos.blues.network.DetectAPI
+import com.highballuos.blues.network.NetworkHelper
 import com.highballuos.blues.network.Result
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.CAPITALIZATION_KEY
 import com.highballuos.blues.sharedpreferences.PreferenceManager.Companion.DEBOUNCE_DELAY_MILLIS_KEY
@@ -87,7 +89,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
 
     private var mCompletions: Array<CompletionInfo>? = null // EditText 자체 내장 자동 완성 데이터를 저장되기 위한 변수
     private var mCompositionOn =
-        true   // Composition, 즉 Commit 은 하지 않고 입력에 밑줄만 들어간 상태를 사용할 지에 대한 Flag
+            true   // Composition, 즉 Commit 은 하지 않고 입력에 밑줄만 들어간 상태를 사용할 지에 대한 Flag
     private var mCandidateViewDrawOn = false   // CandidateView 보여줄 것인지에 대한 Flag
     private var mCompletionOn = false   // EditText 자체 내장 자동 완성 데이터 사용할 것인지에 대한 Flag
 
@@ -99,6 +101,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     private val KEYCODE_HANJA = 212 // KeyEvent.KEYCODE_EISU is available from API 16
     private val KEYCODE_WIN_LEFT = 117 // KeyEvent.KEYCODE_META_LEFT is available from API 11
     private val KEYCODE_SYSREQ = 120 // KeyEvent.KEYCODE_SYSREQ is available from API 11
+
+    private var networkHelper: NetworkHelper? = null
 
     private val logTAG = "SoftKeyboard.kt"
 
@@ -113,6 +117,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         super.onCreate()
         initializeSettingValues()
         job = SupervisorJob()   // job 초기화 (자식 Coroutine 이 독립적으로 실패할 수 있게 Supervisor)
+        networkHelper = NetworkHelper(applicationContext)
         mInputMethodManager = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
     }
 
@@ -248,7 +253,7 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             val usm = getSystemService("usagestats") as UsageStatsManager
             val time = System.currentTimeMillis()
             val appList =
-                usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time)
+                    usm.queryUsageStats(UsageStatsManager.INTERVAL_DAILY, time - 1000 * 1000, time)
             if (appList != null && appList.isNotEmpty()) {
                 val mSortedMap: SortedMap<Long, UsageStats> = TreeMap()
                 for (usageStats in appList) {
@@ -337,8 +342,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                 // 1. 비밀번호 입력에서는 자동완성 X
                 // Termius 의 경우 InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD (0x90)
                 if (variation == InputType.TYPE_TEXT_VARIATION_PASSWORD ||
-                    variation == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD ||
-                    variation == InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD
+                        variation == InputType.TYPE_TEXT_VARIATION_VISIBLE_PASSWORD ||
+                        variation == InputType.TYPE_TEXT_VARIATION_WEB_PASSWORD
                 ) {
                     // Do not display predictions / what the user is typing
                     // when they are entering a password.
@@ -350,8 +355,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
 
                 // 2. URI, Email 역시 자동 완성 X
                 if (variation == InputType.TYPE_TEXT_VARIATION_EMAIL_ADDRESS ||
-                    variation == InputType.TYPE_TEXT_VARIATION_URI ||
-                    variation == InputType.TYPE_TEXT_VARIATION_FILTER
+                        variation == InputType.TYPE_TEXT_VARIATION_URI ||
+                        variation == InputType.TYPE_TEXT_VARIATION_FILTER
                 ) {
                     // Our predictions are not useful for e-mail addresses
                     // or URIs.
@@ -538,20 +543,20 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
      * Deal with the editor reporting movement of its cursor.
      */
     override fun onUpdateSelection(
-        oldSelStart: Int, oldSelEnd: Int,
-        newSelStart: Int, newSelEnd: Int,
-        candidatesStart: Int, candidatesEnd: Int
+            oldSelStart: Int, oldSelEnd: Int,
+            newSelStart: Int, newSelEnd: Int,
+            candidatesStart: Int, candidatesEnd: Int
     ) {
         super.onUpdateSelection(
-            oldSelStart, oldSelEnd, newSelStart, newSelEnd,
-            candidatesStart, candidatesEnd
+                oldSelStart, oldSelEnd, newSelStart, newSelEnd,
+                candidatesStart, candidatesEnd
         )
         Log.v(logTAG, "onUpdateSelection() 함수 시작")
 
         // If the current selection in the text view changes, we should
         // clear whatever candidate text we have.
         if (mComposing.isNotEmpty() && (newSelStart != candidatesEnd
-                    || newSelEnd != candidatesEnd)
+                        || newSelEnd != candidatesEnd)
         ) {
             koreanAutomata?.finishAutomataWithoutInput()
             initializeInputState()
@@ -599,8 +604,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     private fun translateKeyDown(keyCode: Int, event: KeyEvent): Boolean {
         Log.v(logTAG, "translateKeyDown() 함수 시작")
         mMetaState = MetaKeyKeyListener.handleKeyDown(
-            mMetaState!!,
-            keyCode, event
+                mMetaState!!,
+                keyCode, event
         )
         var c = event.getUnicodeChar(MetaKeyKeyListener.getMetaState(mMetaState!!))
         mMetaState = MetaKeyKeyListener.adjustMetaAfterKeypress(mMetaState!!)
@@ -737,8 +742,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         if (PROCESS_HARD_KEYS) {
             // if (mCandidateViewDrawOn) {
             mMetaState = MetaKeyKeyListener.handleKeyUp(
-                mMetaState!!,
-                keyCode, event
+                    mMetaState!!,
+                    keyCode, event
             )
             // }
         }
@@ -803,10 +808,10 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
     private fun keyDownUp(keyEventCode: Int) {
         Log.v(logTAG, "KeyDownUp() 함수 시작")
         currentInputConnection.sendKeyEvent(
-            KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode)
+                KeyEvent(KeyEvent.ACTION_DOWN, keyEventCode)
         )
         currentInputConnection.sendKeyEvent(
-            KeyEvent(KeyEvent.ACTION_UP, keyEventCode)
+                KeyEvent(KeyEvent.ACTION_UP, keyEventCode)
         )
     }
 
@@ -852,16 +857,16 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
             // EnterKey Action
             Keyboard.KEYCODE_DONE -> currentInputConnection.performEditorAction(EditorInfo.IME_ACTION_DONE)
             QwertyKeyboardView.KEYCODE_ENTER_AS_GO -> currentInputConnection.performEditorAction(
-                EditorInfo.IME_ACTION_GO
+                    EditorInfo.IME_ACTION_GO
             )
             QwertyKeyboardView.KEYCODE_ENTER_AS_SEND -> currentInputConnection.performEditorAction(
-                EditorInfo.IME_ACTION_SEND
+                    EditorInfo.IME_ACTION_SEND
             )
             QwertyKeyboardView.KEYCODE_ENTER_AS_SEARCH -> currentInputConnection.performEditorAction(
-                EditorInfo.IME_ACTION_SEARCH
+                    EditorInfo.IME_ACTION_SEARCH
             )
             QwertyKeyboardView.KEYCODE_ENTER_AS_NEXT -> currentInputConnection.performEditorAction(
-                EditorInfo.IME_ACTION_NEXT
+                    EditorInfo.IME_ACTION_NEXT
             )
 
             // Character
@@ -927,27 +932,33 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                     if (mComposing.isNotEmpty()) {
                         val suggestionList = ArrayList<String>()
 
-                        // API 호출
-                        val api = DetectAPI.create()
-                        withContext(Dispatchers.IO) {
-                            val requestBody = hashMapOf<String, List<String>>()
-                            requestBody["instances"] = listOf(mComposing.toString())
+                        networkHelper?.let {
+                            if (it.isNetworkConnected()) {
+                                // API 호출
+                                val api = DetectAPI.create()
+                                withContext(Dispatchers.IO) {
+                                    val requestBody = hashMapOf<String, List<String>>()
+                                    requestBody["instances"] = listOf(mComposing.toString())
 
-                            // Response 처리
-                            val response = api.getValues(requestBody)
-                            if (response.isSuccessful) {
-                                val responseBody: Result? = response.body()
-                                responseBody?.let {
-                                    if (responseBody.predictions[0][0].toDouble() > 0.3) {
-                                        suggestionList.add("더 좋은 말로 바꿔보는 건 어떨까요?")
-                                    } else {
-                                        suggestionList.add("좋은 문장이네요!")
+                                    // Response 처리
+                                    val response = api.getValues(requestBody)
+                                    if (response.isSuccessful) {
+                                        val responseBody: Result? = response.body()
+                                        responseBody?.let {
+                                            if (responseBody.predictions[0][0].toDouble() > 0.3) {
+                                                suggestionList.add("더 좋은 말로 바꿔보는 건 어떨까요?")
+                                            } else {
+                                                suggestionList.add("좋은 문장이네요!")
+                                            }
+                                        }
                                     }
                                 }
+                                setSuggestions(suggestionList, completions = true, typedWordValid = true)
+                            } else {
+                                Toast.makeText(this@BluesIME, "네트워크 연결을 확인해주세요.", Toast.LENGTH_SHORT).show()
                             }
                         }
 
-                        setSuggestions(suggestionList, completions = true, typedWordValid = true)
                     } else {
                         setSuggestions(emptyList(), completions = false, typedWordValid = false)
                     }
@@ -982,8 +993,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
      * 차라리 빈 리스트를 넣음.
      */
     private fun setSuggestions(
-        suggestions: List<String>, completions: Boolean,
-        typedWordValid: Boolean
+            suggestions: List<String>, completions: Boolean,
+            typedWordValid: Boolean
     ) {
         Log.v(logTAG, "setSuggestions() 함수 시작")
         if (isExtractViewShown) {
@@ -1011,9 +1022,9 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                     if (koreanAutomata?.getCompositionString() != "") {
                         if (mComposing.isNotEmpty()) {
                             mComposing.replace(
-                                mComposing.length - 1,
-                                mComposing.length,
-                                koreanAutomata?.getCompositionString()!!
+                                    mComposing.length - 1,
+                                    mComposing.length,
+                                    koreanAutomata?.getCompositionString()!!
                             )
                             if (mComposing.isEmpty()) {
                                 koreanAutomata?.finishAutomataWithoutInput()
@@ -1061,8 +1072,8 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
         val currentKeyboard = mInputView!!.keyboard
         if (currentKeyboard === mEnglishKeyboard) {
             mCapsLock =
-                if (!mCapsLock && !mEnglishKeyboard!!.isShifted) false
-                else !mCapsLock && mEnglishKeyboard!!.isShifted
+                    if (!mCapsLock && !mEnglishKeyboard!!.isShifted) false
+                    else !mCapsLock && mEnglishKeyboard!!.isShifted
             mEnglishKeyboard!!.isShifted = mCapsLock || !mEnglishKeyboard!!.isShifted
             setKeyboardToInputView(mEnglishKeyboard)
             changeShiftKeyIcon()
@@ -1104,13 +1115,13 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                     if (key.codes[0] == -1) {
                         if (mCapsLock && currentKeyboard === mEnglishKeyboard) {
                             key.icon =
-                                resources.getDrawable(R.drawable.ic_baseline_keyboard_capslock_activated_24)
+                                    resources.getDrawable(R.drawable.ic_baseline_keyboard_capslock_activated_24)
                         } else if (currentKeyboard.isShifted) {
                             key.icon =
-                                resources.getDrawable(R.drawable.ic_baseline_keyboard_capslock_24)
+                                    resources.getDrawable(R.drawable.ic_baseline_keyboard_capslock_24)
                         } else {
                             key.icon =
-                                resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_up_24)
+                                    resources.getDrawable(R.drawable.ic_baseline_keyboard_arrow_up_24)
                         }
                     }
                 }
@@ -1182,28 +1193,28 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                 } else {
                     Log.v(logTAG, "handleCharacter - After calling DoAutomata()")
                     Log.v(
-                        logTAG,
-                        "   KoreanMode = [" + (if (koreanAutomata?.isKoreanMode()!!) "true" else "false") + "]"
+                            logTAG,
+                            "   KoreanMode = [" + (if (koreanAutomata?.isKoreanMode()!!) "true" else "false") + "]"
                     )
                     Log.v(
-                        logTAG,
-                        "   CompleteString = [" + koreanAutomata?.getCompleteString() + "]"
+                            logTAG,
+                            "   CompleteString = [" + koreanAutomata?.getCompleteString() + "]"
                     )
                     Log.v(
-                        logTAG,
-                        "   CompositionString = [" + koreanAutomata?.getCompositionString() + "]"
+                            logTAG,
+                            "   CompositionString = [" + koreanAutomata?.getCompositionString() + "]"
                     )
                     Log.v(
-                        logTAG,
-                        "   State = [" + koreanAutomata?.getState() + "]"
+                            logTAG,
+                            "   State = [" + koreanAutomata?.getState() + "]"
                     )
                     Log.v(logTAG, "   ret = [$ret]")
                     if (it and KoreanAutomata.ACTION_UPDATE_COMPLETESTR != 0) {
                         if (mComposing.isNotEmpty()) {
                             mComposing.replace(
-                                mComposing.length - 1,
-                                mComposing.length,
-                                koreanAutomata?.getCompleteString()!!
+                                    mComposing.length - 1,
+                                    mComposing.length,
+                                    koreanAutomata?.getCompleteString()!!
                             )
                         } else {
                             mComposing.append(koreanAutomata?.getCompleteString())
@@ -1214,12 +1225,12 @@ class BluesIME : InputMethodService(), KeyboardView.OnKeyboardActionListener, Co
                     }
                     if (it and KoreanAutomata.ACTION_UPDATE_COMPOSITIONSTR != 0) {
                         if (mComposing.isNotEmpty() && (it and KoreanAutomata.ACTION_UPDATE_COMPLETESTR) == 0
-                            && (it and KoreanAutomata.ACTION_APPEND) == 0
+                                && (it and KoreanAutomata.ACTION_APPEND) == 0
                         ) {
                             mComposing.replace(
-                                mComposing.length - 1,
-                                mComposing.length,
-                                koreanAutomata?.getCompositionString()!!
+                                    mComposing.length - 1,
+                                    mComposing.length,
+                                    koreanAutomata?.getCompositionString()!!
                             )
                         } else {
                             mComposing.append(koreanAutomata?.getCompositionString())
