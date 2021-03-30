@@ -1,5 +1,5 @@
 # Blues-android
-Blues-android is Korean hate speech restyling inputmethodservice for android platform.
+Blues-android is Korean hate speech detecting inputmethodservice for android platform.
 
 ## Install & Setting
 ### Using APK
