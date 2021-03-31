@@ -16,7 +16,8 @@ git clone https://github.com/highballuos/blues-android.git
 3. Follow in-app guide to change settings.
 
 ## Usage
-![app_guide_image](https://user-images.githubusercontent.com/24821303/112752675-19ff4100-900f-11eb-8152-3fe4195985b5.jpeg)
+<img src="https://user-images.githubusercontent.com/24821303/112752675-19ff4100-900f-11eb-8152-3fe4195985b5.jpeg" width="400"  />
+
 * You can turn on/off detection in the current app by clicking bulb icon.
 * You can commit your input by clicking suggestion item on the candidate view.
 * First letter capitalization, Debounce delay settings are available.
