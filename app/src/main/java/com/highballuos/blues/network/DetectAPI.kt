@@ -19,7 +19,7 @@ interface DetectAPI {
 
     companion object {
         // Header에 들어갈 정보 설정
-        private const val BASE_URL_DEMO_API = "http://34.64.84.198/"    // API 기본 경로
+        private const val BASE_URL_DEMO_API = "https://gsc.oasisfores.com/"    // API 기본 경로
 
         fun create(): DetectAPI {
             val httpLoggingInterceptor = HttpLoggingInterceptor()
